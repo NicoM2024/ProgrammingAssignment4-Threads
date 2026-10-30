@@ -1,0 +1,69 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "ProgrammingAssignment4_Threads",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ProgrammingAssignment4_Threads::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ProgrammingAssignment4_Threads-Debug-25475f5acaa72f101eab.json",
+					"name" : "ProgrammingAssignment4_Threads",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Thread_Example::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Thread_Example-Debug-4676d0ab3e9160f2f1c7.json",
+					"name" : "Thread_Example",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/cmake-build-debug",
+		"source" : "C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

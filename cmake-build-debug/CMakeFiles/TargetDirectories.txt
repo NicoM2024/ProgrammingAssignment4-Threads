@@ -1,0 +1,4 @@
+C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/cmake-build-debug/CMakeFiles/ProgrammingAssignment4_Threads.dir
+C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/cmake-build-debug/CMakeFiles/Thread_Example.dir
+C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/cmake-build-debug/CMakeFiles/rebuild_cache.dir
