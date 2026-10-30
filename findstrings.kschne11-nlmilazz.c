@@ -9,10 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #define LINELEN 1024
 #define NUM_THREADS 2
-
 
 
 char buffer[BUFLEN]; //GLOBAL VARIABLE
@@ -48,7 +48,53 @@ int readFile(char *filename, int *numChars) {
 }
 
 void *findStrings(void *param) {
+    SearchInfo *info = (SearchInfo *)param;
+    int current_index = 0;
+    int overall_index = 0;
+    int matched_chars = 0;
 
+    // Compare the current buffer character with the current local character
+    // If they match:
+    //  -> matched_chars increases
+    //  -> If matched chars is large enough to mean that a whole word was found
+    //     -> matched chars is reset, the current index (local) is reset to 0
+    // Otherwise:
+    //  -> reset the local current_index because that strain of characters failed to match the word
+
+    while (true){
+        if (buffer[overall_index] == info->pattern[current_index]){
+            // The current letter of the target word and the current letter of the buffer match.
+            // This means we get to increment the number of characters that have matched in order
+            matched_chars++;
+            if (matched_chars == strlen(info->pattern)){
+                // The number of matched characters in order we have found equals the number we need in order
+                // to be sure we found the target word.
+                // Therefore, we increment numFound, reset the matched chars, and start from the beginning of the
+                // target word once more by resetting the current index.
+                info->numFound++;
+                matched_chars = 0;
+                current_index = 0;
+            } else {
+                // If they matched but do not make the whole word, increment the local index because we
+                // can keep comparing further to see if it will make a whole word
+                current_index++;
+            }
+        } else {
+            // They didn't match, meaning the current strain of characters failed to create the target word
+            // Therefore, we reset the current index to start from the beginning of the target word once more
+            current_index = -1;
+        }
+
+        // Increment the current index
+        current_index++;
+
+        // If we have reached or passed the target end and we are not in the middle of identifying a word, quit
+        // This will not break if we are either still within our start-end range OR we are in the middle of identifying
+        // a word.
+        if (current_index >= info->endIndex && matched_chars == 0) {
+            break;
+        }
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -58,19 +104,10 @@ int main(int argc, char *argv[]) {
         return 8;
     }*/
     //rc = readFile(argv[1], &numChars);
-    rc = readFile("C:/Users/Kentd/CLionProjects/ProgrammingAssignment4-Threads/coyote.asc", &numChars);
+    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/coyote.asc", &numChars);
     if (rc != 0)
         return 8;
 
-    // prompt the user for the string to search for, using PROMPT
-    char* target = "test"; // This should be the result of prompting the user for a string
-
-    SearchInfo searchInfo[NUM_THREADS];
-    pthread_t tid[NUM_THREADS];
-    for (int i = 0; i < NUM_THREADS; i++)
-    {
-        //tid[i] = pthread_create();
-    }
     // create the threads
     SearchInfo searchInfo[NUM_THREADS];
     pthread_t tid[NUM_THREADS];
