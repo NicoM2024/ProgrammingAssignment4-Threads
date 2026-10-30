@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     pthread_t tid[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++)
     {
-        tid[i] = pthread_create();
+        //tid[i] = pthread_create();
     }
     // create the threads
     // wait for the threads to finish
