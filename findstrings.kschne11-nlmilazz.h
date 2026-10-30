@@ -7,7 +7,6 @@
 
 #define BUFLEN 10100
 #define LINELEN 1024
-#define NUM_THREADS 2
 
 #define PROMPT "String to search for? "
 
