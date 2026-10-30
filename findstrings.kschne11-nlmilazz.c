@@ -63,20 +63,21 @@ int main(int argc, char *argv[]) {
         return 8;
 
     // prompt the user for the string to search for, using PROMPT
-    char* target = "test"; // This should be the result of prompting the user for a string
 
-    SearchInfo searchInfo[NUM_THREADS];
-    pthread_t tid[NUM_THREADS];
-    for (int i = 0; i < NUM_THREADS; i++)
-    {
-        //tid[i] = pthread_create();
-    }
     // create the threads
     SearchInfo searchInfo[NUM_THREADS];
     pthread_t tid[NUM_THREADS];
     pthread_t threads[NUM_THREADS];
 
-    char *prompt = "1";
+    char input[100];
+    char* prompt = input;
+    printf("Enter prompt: ");
+    if (fgets(prompt, sizeof(buffer), stdin) != NULL) {
+        prompt[strcspn(prompt, "\n")] = '\0';
+    }
+    for (int i = 0; prompt[i] != '\0'; i++) {
+        prompt[i] = tolower((unsigned char)prompt[i]);
+    }
     int partition_size = strlen(buffer) / NUM_THREADS;
     int start_index = 0;
     int num_found = 0;
@@ -86,6 +87,11 @@ int main(int argc, char *argv[]) {
         start_index = start_index + partition_size;
     }
     // wait for the threads to finish
-    // summarize the results from the threads
+    for (int i=0; i<NUM_THREADS; ++i) {
+        pthread_join(tid[i], NULL);
+        // summarize the results from the threads
+        num_found += searchInfo[i].numFound;
+    }
+    printf("Number of items found: %d\n", num_found);
     return 0;
 }
