@@ -3,6 +3,7 @@
 //
 
 #include "findstrings.kschne11-nlmilazz.h"
+#include <pthread.h>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -60,7 +61,16 @@ int main(int argc, char *argv[]) {
     rc = readFile("C:/Users/Kentd/CLionProjects/ProgrammingAssignment4-Threads/coyote.asc", &numChars);
     if (rc != 0)
         return 8;
+
     // prompt the user for the string to search for, using PROMPT
+    char* target = "test"; // This should be the result of prompting the user for a string
+
+    SearchInfo searchInfo[NUM_THREADS];
+    pthread_t tid[NUM_THREADS];
+    for (int i = 0; i < NUM_THREADS; i++)
+    {
+        //tid[i] = pthread_create();
+    }
     // create the threads
     SearchInfo searchInfo[NUM_THREADS];
     pthread_t tid[NUM_THREADS];
