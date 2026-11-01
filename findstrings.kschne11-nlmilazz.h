@@ -18,13 +18,6 @@ typedef struct {
     
 } SearchInfo;
 
-typedef struct {
-    int expected_char_index;
-    int current_index;
-    int matched_chars;
-    int offset;
-} SearchBranch;
-
 int readFile(char *filename, int *numChars);
 void *findMatches(void *param);
 #endif //PROGRAMMINGASSIGNMENT4_THREADS_FINDSTRINGS_KSCHNE11_NMILAZZ_H
