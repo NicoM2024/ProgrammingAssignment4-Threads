@@ -46,73 +46,23 @@ void *findStrings(void *param) {
 
     SearchInfo *info = (SearchInfo *)param;
 
-    int frame_start = info->startIndex;
-
-    //int overall_index = info->startIndex;
-
-    // Compare the current buffer character with the current local character
-    // If they match:
-    //  -> matched_chars increases
-    //  -> If matched chars is large enough to mean that a whole word was found
-    //     -> matched chars is reset, the current index (local) is reset to 0
-    // Otherwise:
-    //  -> reset the local current_index because that strain of characters failed to match the word
-
-    printf("\nthread started");
-    // printf("\nStart Index: %i. End Index: %i.", info->startIndex, info->endIndex);
-
-    while (true){
-
-        int frame_size = strlen(info->pattern);
-        for (int i = 0; i < frame_size; i++) {
-            if (info->pattern[i] != buffer[frame_start + i]){
+    for (int i = info->startIndex; i < info->endIndex; i++) {
+        bool passed = true;
+        for (int j = 0; j < strlen(info->pattern); j++) {
+            if (i + j < strlen(buffer)) {
+                if (buffer[i + j] != info->pattern[j]) {
+                    passed = false;
+                    break;
+                }
+            }
+            else {
+                passed = false;
                 break;
             }
-
-            // This means it's the last iteration of the frame, and we didn't break
-            // Meaning, we found a word
-            if (i == frame_size - 1){
-                info->numFound++;
-            }
         }
-
-        frame_start++;
-
-        // printf("\nTHREAD: %i. This is the word: %s. This is the index: %i. This is the local char: %c. This is the global char: %c.", info->startIndex, info->pattern, current_index, info->pattern[current_index], buffer[overall_index]);
-//        if (buffer[overall_index] == info->pattern[current_index]){
-            // The current letter of the target word and the current letter of the buffer match.
-            // This means we get to increment the number of characters that have matched in order
-//            matched_chars++;
-            // printf("\nmatched char. Count: %i", matched_chars);
-//            if (matched_chars == strlen(info->pattern)){
-                // The number of matched characters in order we have found equals the number we need in order
-                // to be sure we found the target word.
-                // Therefore, we increment numFound, reset the matched chars, and start from the beginning of the
-                // target word once more by resetting the current index.
-//                info->numFound++;
-//                matched_chars = 0;
-//                current_index = 0;
-                // printf("\nfound a word");
-//            } else {
-                // If they matched but do not make the whole word, increment the local index because we
-                // can keep comparing further to see if it will make a whole word
-//                current_index++;
-//            }
-//        } else {
-            // They didn't match, meaning the current strain of characters failed to create the target word
-            // Therefore, we reset the current index to start from the beginning of the target word once more
-//            matched_chars = 0;
-//            current_index = 0;
-//        }
-
-        // Increment the current index
-        // overall_index++;
-
-        // If we have reached or passed the target end and we are not in the middle of identifying a word, quit
-        // This will not break if we are either still within our start-end range OR we are in the middle of identifying
-        // a word.
-
-        if ()
+        if (passed) {
+            info->numFound++;
+        }
     }
 }
 
@@ -123,7 +73,7 @@ int main(int argc, char *argv[]) {
         return 8;
     }*/
     //rc = readFile(argv[1], &numChars);
-    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/coyote.asc", &numChars);
+    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/cougar.asc", &numChars);
     if (rc != 0)
         return 8;
 
