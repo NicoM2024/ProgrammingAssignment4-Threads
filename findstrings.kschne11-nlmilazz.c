@@ -57,7 +57,25 @@ void *findStrings(void *param) {
         branches[i].matched_chars = 0;
         branches[i].expected_char_index = 0;
     }
-
+    for (int i = info->startIndex; i < info->endIndex; i++) {
+        bool passed = true;
+        for (int j = 0; j < strlen(info->pattern); j++) {
+            if (i + j <= strlen(buffer)) {
+                if (buffer[i + j] != info->pattern[j]) {
+                    passed = false;
+                    break;
+                }
+            }
+            else {
+                passed = false;
+                break;
+            }
+        }
+        if (passed == true) {
+            info->numFound++;
+        }
+    }
+    /*
     int overall_index = info->startIndex;
 
     // Compare the current buffer character with the current local character
@@ -158,7 +176,7 @@ void *findStrings(void *param) {
             printf("\nthread ended");
             break;
         }
-    }
+    }*/
 }
 
 int main(int argc, char *argv[]) {
@@ -168,7 +186,9 @@ int main(int argc, char *argv[]) {
         return 8;
     }*/
     //rc = readFile(argv[1], &numChars);
-    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/abba.asc", &numChars);
+    //"C:/Users/Kentd/CLionProjects/ProgrammingAssignment4-Threads/abba.asc"
+    //"C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/abba.asc"
+    rc = readFile("C:/Users/Kentd/CLionProjects/ProgrammingAssignment4-Threads/abba.asc", &numChars);
     if (rc != 0)
         return 8;
 
