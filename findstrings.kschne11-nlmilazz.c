@@ -78,6 +78,9 @@ void *findStrings(void *param) {
             // Keep track of the current character in the buffer
             // we offset by the branch offset to look for potentially overlapping words
 
+            // THIS SYSTEM DOES NOT QUITE WORK BECAUSE BRANCHES EARLIER IN THE PROCESS (lower offset) WILL
+            // COUNT WORDS THAT LATER BRANCHES (larger offset) HAVE ALREADY FOUND.
+
             if (overall_index + branches[i].offset >= strlen(buffer)){
                 continue;
             }
