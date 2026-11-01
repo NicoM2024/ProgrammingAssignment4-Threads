@@ -45,20 +45,10 @@ int readFile(char *filename, int *numChars) {
 void *findStrings(void *param) {
 
     SearchInfo *info = (SearchInfo *)param;
-    char starting_char = info->pattern[0];
 
-    // Create a list of different word branches. It is true that we can never be constructing a new word a number of
-    // times greater than the pattern size, so there can only be that many branches or less, so that is the array size.
-    SearchBranch branches[strlen(info->pattern)];
+    int frame_start = info->startIndex;
 
-    for (int i = 0; i < strlen(info->pattern); i++){
-        branches[i].offset = i;
-        branches[i].current_index = 0;
-        branches[i].matched_chars = 0;
-        branches[i].expected_char_index = 0;
-    }
-
-    int overall_index = info->startIndex;
+    //int overall_index = info->startIndex;
 
     // Compare the current buffer character with the current local character
     // If they match:
@@ -72,45 +62,21 @@ void *findStrings(void *param) {
     // printf("\nStart Index: %i. End Index: %i.", info->startIndex, info->endIndex);
 
     while (true){
-        // For every branch, do the comparison and increments
-        for (int i = 0; i < strlen(info->pattern); i++){
 
-            // Keep track of the current character in the buffer
-            // we offset by the branch offset to look for potentially overlapping words
-
-            // THIS SYSTEM DOES NOT QUITE WORK BECAUSE BRANCHES EARLIER IN THE PROCESS (lower offset) WILL
-            // COUNT WORDS THAT LATER BRANCHES (larger offset) HAVE ALREADY FOUND.
-
-            if (overall_index + branches[i].offset >= strlen(buffer)){
-                continue;
+        int frame_size = strlen(info->pattern);
+        for (int i = 0; i < frame_size; i++) {
+            if (info->pattern[i] != buffer[frame_start + i]){
+                break;
             }
 
-            char current_char = buffer[overall_index + branches[i].offset];
-
-            // This is the character the branch is looking for
-            char branch_char = info->pattern[branches[i].expected_char_index];
-
-            if (current_char == branch_char){
-                // If the branch found the character it is looking for, increment matched chars
-                branches[i].matched_chars++;
-                if (branches[i].matched_chars == strlen(info->pattern)){
-                    // Then, if we matched enough to be a whole word,
-                    // increment numFound, reset matched_chars, and reset the expected_char_index
-                    //     (once we find a word now we are looking for the start of the word once more)
-                    info->numFound++;
-                    branches[i].matched_chars = 0;
-                    branches[i].expected_char_index = 0;
-                } else {
-                    // If we matched but do not have enough characters to be the whole targer word, simply set to
-                    // look for the next character in the pattern
-                    branches[i].expected_char_index = (branches[i].expected_char_index + 1) % strlen(info->pattern);
-                }
-            } else {
-                // If the character didn't match, go back to looking for the start of the word and reset matched_chars
-                branches[i].matched_chars = 0;
-                branches[i].expected_char_index = 0;
+            // This means it's the last iteration of the frame, and we didn't break
+            // Meaning, we found a word
+            if (i == frame_size - 1){
+                info->numFound++;
             }
         }
+
+        frame_start++;
 
         // printf("\nTHREAD: %i. This is the word: %s. This is the index: %i. This is the local char: %c. This is the global char: %c.", info->startIndex, info->pattern, current_index, info->pattern[current_index], buffer[overall_index]);
 //        if (buffer[overall_index] == info->pattern[current_index]){
@@ -140,24 +106,13 @@ void *findStrings(void *param) {
 //        }
 
         // Increment the current index
-        overall_index++;
+        // overall_index++;
 
         // If we have reached or passed the target end and we are not in the middle of identifying a word, quit
         // This will not break if we are either still within our start-end range OR we are in the middle of identifying
         // a word.
 
-        // This makes sure none of the branches are still working on a word
-        bool none_matching = true;
-        for (int i = 0; i < strlen(info->pattern); i++){
-            if (branches[i].matched_chars != 0) {
-                none_matching = false;
-            }
-        }
-
-        if ((overall_index >= info->endIndex && none_matching) || overall_index >= strlen(buffer)) {
-            printf("\nthread ended");
-            break;
-        }
+        if ()
     }
 }
 
@@ -168,7 +123,7 @@ int main(int argc, char *argv[]) {
         return 8;
     }*/
     //rc = readFile(argv[1], &numChars);
-    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/abba.asc", &numChars);
+    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/coyote.asc", &numChars);
     if (rc != 0)
         return 8;
 
