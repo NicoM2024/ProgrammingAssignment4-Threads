@@ -26,9 +26,7 @@ int readFile(char *filename, int *numChars) {
     }
     // now you can read from the file
     int total_length = 0;
-    while (!feof(fp)) {
-        //char *fgets(char *s, int size, FILE *fp);
-        char *chp = fgets(line, LINELEN, fp);
+    while (fgets(line, LINELEN, fp) != NULL) {
         int len = strlen(line);
         if (line[len-1] == '\n') {
             line[len-1] = '\0';
@@ -41,17 +39,31 @@ int readFile(char *filename, int *numChars) {
             }
         }
     }
-    for (int i=0; i<total_length; i++) {
-        printf("%c", buffer[i]);
-    }
     return 0;
 }
 
 void *findStrings(void *param) {
+
     SearchInfo *info = (SearchInfo *)param;
-    int current_index = 0;
-    int overall_index = 0;
-    int matched_chars = 0;
+    char starting_char = info->pattern[0];
+
+    typedef struct {
+        int expected_char_index = 0;
+        int current_index = 0;
+        int matched_chars = 0;
+        int start_offset = 0;
+    } SearchBranch;
+
+    // Create a list of different word branches. It is true that we can never be constructing a new word a number of
+    // times greater than the pattern size, so there can only be that many branches or less, so that is the array size.
+    SearchBranch branches[strlen(info->pattern)];
+
+    for (int i = 0; i < strlen(info->pattern); i++){
+        branches[i].start_offset = i;
+    }
+
+    int overall_index = info->startIndex;
+    int new_branch_index = 0;
 
     // Compare the current buffer character with the current local character
     // If they match:
@@ -61,11 +73,36 @@ void *findStrings(void *param) {
     // Otherwise:
     //  -> reset the local current_index because that strain of characters failed to match the word
 
+    printf("\nthread started");
+    // printf("\nStart Index: %i. End Index: %i.", info->startIndex, info->endIndex);
+
     while (true){
+        char current_char = buffer[overall_index];
+
+        // For every branch, do the comparison and increments
+        for (int i = 0; i < strlen(info->pattern); i++){
+            char branch_char = info->pattern[branches[i].expected_char_index];
+            if (current_char == branch_char){
+                if (branch_char == starting_char && i == new_branch_index){
+                    branches[i].matched_chars ++;
+                    if (branches[i].matched_chars == strlen(info->pattern)){
+                        info->numFound++;
+                        branches[i].matched_chars = 0;
+                        branches[i].expected_char_index = 0;
+                    } else {
+                        branches[i].expected_char_index = (branches[i].expected_char_index + 1) % strlen(info->pattern);
+                    }
+
+                }
+            }
+        }
+
+        // printf("\nTHREAD: %i. This is the word: %s. This is the index: %i. This is the local char: %c. This is the global char: %c.", info->startIndex, info->pattern, current_index, info->pattern[current_index], buffer[overall_index]);
         if (buffer[overall_index] == info->pattern[current_index]){
             // The current letter of the target word and the current letter of the buffer match.
             // This means we get to increment the number of characters that have matched in order
             matched_chars++;
+            // printf("\nmatched char. Count: %i", matched_chars);
             if (matched_chars == strlen(info->pattern)){
                 // The number of matched characters in order we have found equals the number we need in order
                 // to be sure we found the target word.
@@ -74,6 +111,7 @@ void *findStrings(void *param) {
                 info->numFound++;
                 matched_chars = 0;
                 current_index = 0;
+                // printf("\nfound a word");
             } else {
                 // If they matched but do not make the whole word, increment the local index because we
                 // can keep comparing further to see if it will make a whole word
@@ -82,16 +120,18 @@ void *findStrings(void *param) {
         } else {
             // They didn't match, meaning the current strain of characters failed to create the target word
             // Therefore, we reset the current index to start from the beginning of the target word once more
-            current_index = -1;
+            matched_chars = 0;
+            current_index = 0;
         }
 
         // Increment the current index
-        current_index++;
+        overall_index++;
 
         // If we have reached or passed the target end and we are not in the middle of identifying a word, quit
         // This will not break if we are either still within our start-end range OR we are in the middle of identifying
         // a word.
-        if (current_index >= info->endIndex && matched_chars == 0) {
+        if ((overall_index >= info->endIndex && matched_chars == 0) || overall_index >= strlen(buffer)) {
+            printf("\nthread ended");
             break;
         }
     }
@@ -104,7 +144,7 @@ int main(int argc, char *argv[]) {
         return 8;
     }*/
     //rc = readFile(argv[1], &numChars);
-    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/coyote.asc", &numChars);
+    rc = readFile("C:/Users/nmila/Downloads/OperatingSystems/ProgrammingAssignment4-Threads/abba.asc", &numChars);
     if (rc != 0)
         return 8;
 
@@ -117,13 +157,15 @@ int main(int argc, char *argv[]) {
 
     char input[100];
     char* prompt = input;
-    printf("Enter prompt: ");
+    printf("\nEnter prompt: ");
     if (fgets(prompt, sizeof(buffer), stdin) != NULL) {
         prompt[strcspn(prompt, "\n")] = '\0';
     }
     for (int i = 0; prompt[i] != '\0'; i++) {
         prompt[i] = tolower((unsigned char)prompt[i]);
     }
+    printf("prompt received:");
+    printf(prompt);
     int partition_size = strlen(buffer) / NUM_THREADS;
     int start_index = 0;
     int num_found = 0;
@@ -138,6 +180,6 @@ int main(int argc, char *argv[]) {
         // summarize the results from the threads
         num_found += searchInfo[i].numFound;
     }
-    printf("Number of items found: %d\n", num_found);
+    printf("\nNumber of items found: %d\n", num_found);
     return 0;
 }
